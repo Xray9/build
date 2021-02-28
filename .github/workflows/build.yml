@@ -33,6 +33,7 @@ jobs:
           CGO_ENABLED=0 go build -x -v -a -o xray -trimpath -ldflags "-s -w -buildid=" ./main >../log/xray.1.log 2>&1
           du -sh xray
           mv ../xray.go main/distro/all/all.go
+          mv ../run.go main/run.go
           CGO_ENABLED=0 go build -x -v -a -o xray -trimpath -ldflags "-s -w -buildid=" ./main >../log/xray.2.log 2>&1
           du -sh xray
 
