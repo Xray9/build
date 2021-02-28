@@ -1,0 +1,42 @@
+name: build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.15.7"
+
+      - run: go version
+
+      - run: mkdir log
+
+      - run: |
+          git clone --depth 1 https://github.com/v2fly/v2ray-core
+          cd v2ray-core
+          CGO_ENABLED=0 go build -x -v -a -o v2ray -trimpath -ldflags "-s -w -buildid=" ./main >../log/v2ray.1.log 2>&1
+          du -sh v2ray
+          mv ../v2ray.go main/distro/all/all.go
+          CGO_ENABLED=0 go build -x -v -a -o v2ray -trimpath -ldflags "-s -w -buildid=" ./main >../log/v2ray.2.log 2>&1
+          du -sh v2ray
+
+      - run: |
+          git clone --depth 1 https://github.com/XTLS/Xray-core
+          cd Xray-core
+          CGO_ENABLED=0 go build -x -v -a -o xray -trimpath -ldflags "-s -w -buildid=" ./main >../log/xray.1.log 2>&1
+          du -sh xray
+          mv ../xray.go main/distro/all/all.go
+          CGO_ENABLED=0 go build -x -v -a -o xray -trimpath -ldflags "-s -w -buildid=" ./main >../log/xray.2.log 2>&1
+          du -sh xray
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: log
